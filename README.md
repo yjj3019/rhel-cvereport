@@ -1,5 +1,7 @@
 # rhel-cvereport
 
+[English](./README.en.md) | 한국어
+
 Claude Skill: Red Hat CVE 취약점 보안 리포트를 **고정된 한국어 형식**으로 자동 생성합니다.
 
 CVE ID(또는 Red Hat CVE URL)만 주면, Red Hat CVE 페이지 · CSAF/VEX · EPSS · CISA KEV 4곳의 데이터를 자동으로 조사해서 아래 6개 섹션으로 구성된 리포트를 만들어 줍니다.
