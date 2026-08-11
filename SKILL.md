@@ -23,6 +23,7 @@ CVE ID 하나를 입력받아, 고정된 한국어 리포트를 생성한다. **
 - CVSS v3 Score Breakdown 표 (Red Hat / NVD / cve.org 컬럼과 각 벡터, 점수)
 - Mitigation 섹션이 명시적으로 존재하는지 확인 (있으면 내용을 번역해서 3번 섹션에 반영, 없으면 템플릿의 기본 문구 사용)
 - 공개일(Public Date), 최종 갱신일
+- **"Affected Products / Services" 표 (Products/services, Components, State, Justification, Errata, Release date 컬럼)를 반드시 확인한다.** 이 표는 JavaScript로 렌더링되어 기본 `web_fetch`로는 보이지 않을 수 있다 — 이 경우 CSAF/VEX JSON(2-2)의 `product_status` 필드(`fixed`, `known_affected`, `known_not_affected`, `under_investigation`, `out_of_support_scope` 등)로 반드시 교차 확인한다. **Statement 본문의 일반적 서술("이 제품군이 영향받는다")만 보고 특정 제품의 상태를 추정하지 않는다 — 반드시 이 표/JSON에 명시된 개별 제품별 상태를 확인한다.**
 
 **2-2. Red Hat CSAF/VEX JSON (필수, 패키지 버전 정확성을 위해)**
 CVE ID를 소문자로 바꾸고 연도를 추출해 다음 URL을 `web_fetch`:
@@ -75,7 +76,7 @@ firefox/thunderbird 계열 CVE라면 Red Hat CVE 페이지 References에서 mfsa
   2. `## 2. 심각도(CVSS) 비교` (표 + `>` 인용구 해설 1줄)
   3. `## 3. 실제 악용 가능성 (EPSS · CISA KEV)` (표 + `**해석**` 불릿 3개)
   4. `## 4. 완화 방법 (Mitigation)`
-  5. `## 5. 영향받는 제품 및 패치` (표 + `>` 인용구 — Red Hat 공식 안내문 한국어 번역)
+  5. `## 5. 영향받는 제품 및 패치` (표 + `>` 인용구 — Red Hat 공식 안내문 한국어 번역 및 상태 요약)
   6. `## 6. 출처`
 - **소제목은 "취약점 설명"으로 고정** ("CVE-xxxx-xxxx 에 대한 설명", "쉬운 설명" 등으로 쓰지 않는다)
 - "5. 영향받는 제품 및 패치" 표 마지막에 **날짜, 생성일, 타임스탬프 등 어떤 메타정보도 추가하지 않는다** — 이전 반복 시행착오 끝에 이 항목은 완전히 제거하기로 확정되었다.
@@ -83,7 +84,12 @@ firefox/thunderbird 계열 CVE라면 Red Hat CVE 페이지 References에서 mfsa
 - HTML 태그(`<div>`, `<p align=...>` 등)는 절대 사용하지 않는다 — 렌더링 안 되는 뷰어가 있어 텍스트로 그대로 노출되는 문제가 확인됨.
 - 우측 정렬이 필요한 요소도 만들지 않는다 (표 우측 정렬 시도는 불필요한 구분선을 만들어 제거하기로 결정됨). 모든 텍스트는 좌측 정렬 기본값 그대로 둔다.
 - 전체 문체는 한국어 존댓말, 평서형 설명체. 기술 용어는 영어 병기 가능하나 (예: "메모리 안전성(Memory Safety)") 문장 자체는 쉬운 한국어로 푼다.
-- "5. 영향받는 제품 및 패치" 표 컬럼은 정확히: `제품 | 컴포넌트 | RHSA | 수정 버전(x86_64) | 발행일`
+- "5. 영향받는 제품 및 패치" 표는 **패치가 나온 제품만 넣지 않는다. Red Hat이 분류한 모든 관련 제품(Fixed / Not affected / Out of support scope / Will not fix / Under investigation 등)을 빠짐없이 표시한다.** 이는 사용자가 "내 제품이 왜 표에 없지?"라고 헷갈리지 않고, 지원 종료되었거나 영향이 없는 제품도 명확히 인지하도록 하기 위함이다.
+  - 패치가 있는 행의 컬럼: `제품 | 컴포넌트 | RHSA | 수정 버전(x86_64) | 발행일`
+  - 패치가 없는 행(Not affected / Out of support / Will not fix 등)은 아래처럼 별도 표를 쓰거나, 위 표에 `상태 | 근거` 컬럼을 추가한 확장 표로 합쳐서 표시한다 (어느 쪽이든 빠짐없이 다 보여주는 것이 핵심):
+    `제품 | 컴포넌트 | 상태 | 근거 | RHSA | 수정 버전`
+  - "Out of support scope"는 "지원 범위 밖", "Not affected"는 "영향 없음", "Vulnerable Code not Present"는 "취약한 코드 없음", "Will not fix"는 "패치 계획 없음"으로 번역한다.
+  - 표 아래 `>` 인용구에는 Red Hat 공식 안내문 번역과 함께, 정리된 한 줄 요약(예: "이 CVE는 RHEL 7/8/9/10 어느 버전도 조치가 필요하지 않습니다" 등)을 반드시 덧붙인다.
 - "2. 심각도" 표 컬럼은 정확히: `평가 기관 | 버전 | 점수 | 벡터 | 등급`
 - "3. 실제 악용 가능성" 표 컬럼은 정확히: `지표 | 값 | 조회 기준일`, 행은 `EPSS 점수`, `EPSS 백분위`, `CISA KEV 등재 여부` 3개 고정.
 - 출처 섹션은 항상 다음 순서로, 해당 사항 있는 것만 포함: Red Hat CVE 페이지 → Red Hat Bugzilla → (있으면) Mozilla 보안 권고 → Red Hat 생명주기 정책(`https://access.redhat.com/support/policy/updates/errata`) → EPSS API URL → CISA KEV JSON URL.
