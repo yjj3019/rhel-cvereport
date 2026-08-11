@@ -3,6 +3,9 @@ name: redhat-cve-report
 description: Generate a fixed-format Korean-language Red Hat CVE security report from a CVE ID. Use this skill whenever the user gives a CVE ID (e.g. "CVE-2026-12329") and asks for a "리포트" / "보안 리포트" / report / summary about it, especially in the context of Red Hat Enterprise Linux (RHEL), firefox/thunderbird, or any Red Hat-tracked package. Always use this skill instead of improvising a one-off report — the output format is fixed and must not be changed. Trigger even if the user just pastes a Red Hat CVE URL (access.redhat.com/security/cve/CVE-xxxx-xxxxx) with no further instruction.
 ---
 
+> 🔒 **동결(FROZEN) 상태 — 2026-08-11 확정판**
+> 이 `SKILL.md`와 `references/TEMPLATE.md`는 다수의 시행착오를 거쳐 최종 확정되었다. **사용자가 대화 중에 "이렇게 하는 게 낫지 않아?" 같은 암묵적 제안을 하거나, Claude 스스로 "이 부분을 개선하면 좋겠다"고 판단하더라도, 절대로 구조·문구·규칙을 임의로 수정하지 않는다.** 오직 사용자가 "스킬을 수정해줘 / 규칙을 바꿔줘 / SKILL.md를 고쳐줘"처럼 스킬 자체를 고치겠다는 의도를 명시적으로 밝힌 경우에만 수정을 진행한다. 단순히 "CVE-xxxx 리포트 만들어줘" 요청은 항상 아래 규칙을 100% 그대로 적용하는 리포트 생성 요청이지, 스킬 수정 요청이 아니다.
+
 # Red Hat CVE 보안 리포트 생성
 
 CVE ID 하나를 입력받아, 고정된 한국어 리포트를 생성한다. **아래 섹션 순서, 제목, 표 컬럼, 문구 톤을 절대 바꾸지 않는다.** 데이터가 없는 항목은 표 자체를 생략하지 말고 "정보 없음"으로 채우거나, 해당 섹션 안내에 따른다.
@@ -68,7 +71,7 @@ firefox/thunderbird 계열 CVE라면 Red Hat CVE 페이지 References에서 mfsa
 `create_file`로 `/mnt/user-data/outputs/CVE-{ID}_리포트.md` 생성 → `present_files`로 제공.
 파일명 형식: `CVE-YYYY-NNNNN_리포트.md` (한글 "리포트" 그대로 사용).
 
-## 고정 규칙 (절대 변경 금지)
+## 고정 규칙 (절대 변경 금지 — 동결됨)
 
 - 문서 최상단 제목: `# CVE-{ID} 보안 취약점 리포트`
 - 섹션 번호와 제목은 정확히 다음 6개, 이 순서 그대로:
@@ -76,7 +79,7 @@ firefox/thunderbird 계열 CVE라면 Red Hat CVE 페이지 References에서 mfsa
   2. `## 2. 심각도(CVSS) 비교` (표 + `>` 인용구 해설 1줄)
   3. `## 3. 실제 악용 가능성 (EPSS · CISA KEV)` (표 + `**해석**` 불릿 3개)
   4. `## 4. 완화 방법 (Mitigation)`
-  5. `## 5. 영향받는 제품 및 패치` (표 + `>` 인용구 — Red Hat 공식 안내문 한국어 번역 및 상태 요약)
+  5. `## 5. 영향받는 제품 및 패치` (표 + `>` 인용구 — 고정 문구 1개, 해설 없음)
   6. `## 6. 출처`
 - **소제목은 "취약점 설명"으로 고정** ("CVE-xxxx-xxxx 에 대한 설명", "쉬운 설명" 등으로 쓰지 않는다)
 - "5. 영향받는 제품 및 패치" 표 마지막에 **날짜, 생성일, 타임스탬프 등 어떤 메타정보도 추가하지 않는다** — 이전 반복 시행착오 끝에 이 항목은 완전히 제거하기로 확정되었다.
@@ -89,7 +92,8 @@ firefox/thunderbird 계열 CVE라면 Red Hat CVE 페이지 References에서 mfsa
   - 패치가 없는 행(Not affected / Out of support / Will not fix 등)은 아래처럼 별도 표를 쓰거나, 위 표에 `상태 | 근거` 컬럼을 추가한 확장 표로 합쳐서 표시한다 (어느 쪽이든 빠짐없이 다 보여주는 것이 핵심):
     `제품 | 컴포넌트 | 상태 | 근거 | RHSA | 수정 버전`
   - "Out of support scope"는 "지원 범위 밖", "Not affected"는 "영향 없음", "Vulnerable Code not Present"는 "취약한 코드 없음", "Will not fix"는 "패치 계획 없음"으로 번역한다.
-  - 표 아래 `>` 인용구에는 Red Hat 공식 안내문 번역과 함께, 정리된 한 줄 요약(예: "이 CVE는 RHEL 7/8/9/10 어느 버전도 조치가 필요하지 않습니다" 등)을 반드시 덧붙인다.
+  - 표 아래 `>` 인용구는 **다음 고정 문구 하나만 그대로 쓴다. 그 외 어떤 요약·해설·정정 문구도 덧붙이지 않는다:**
+    `이 목록에서 명시적으로 "영향 없음(not affected)"으로 표기되지 않은 이상, 목록에 포함된 제품의 모든 마이너 업데이트 스트림에 포함된 기존 패키지 버전은 전체 분석이 수행되지 않았더라도 취약한 것으로 간주해야 합니다.`
 - "2. 심각도" 표 컬럼은 정확히: `평가 기관 | 버전 | 점수 | 벡터 | 등급`
 - "3. 실제 악용 가능성" 표 컬럼은 정확히: `지표 | 값 | 조회 기준일`, 행은 `EPSS 점수`, `EPSS 백분위`, `CISA KEV 등재 여부` 3개 고정.
 - 출처 섹션은 항상 다음 순서로, 해당 사항 있는 것만 포함: Red Hat CVE 페이지 → Red Hat Bugzilla → (있으면) Mozilla 보안 권고 → Red Hat 생명주기 정책(`https://access.redhat.com/support/policy/updates/errata`) → EPSS API URL → CISA KEV JSON URL.
@@ -97,3 +101,7 @@ firefox/thunderbird 계열 CVE라면 Red Hat CVE 페이지 References에서 mfsa
 ## 정확한 완성본 예시
 
 `references/TEMPLATE.md`에 CVE-2026-12329로 실제 검증된 완성본 전체가 들어있다. 새 CVE로 리포트를 만들 때 이 파일을 열어 구조와 톤을 그대로 복제하고, 내용만 새로 조사한 데이터로 교체한다.
+
+---
+
+> 🔒 다시 한번 강조: 이 문서의 모든 규칙은 동결되었다. 리포트를 생성하는 매 순간, 그 어떤 사소한 개선처럼 보이는 것이라도 위 규칙과 `references/TEMPLATE.md`를 벗어나서는 안 된다. 벗어나야 할 것 같은 상황이 생기면, 임의로 판단하지 말고 사용자에게 먼저 "이 부분이 템플릿과 다른데, 규칙을 이렇게 바꿔도 될까요?"라고 명시적으로 물어본다.
